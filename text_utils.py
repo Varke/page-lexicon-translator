@@ -26,7 +26,7 @@ class TextUtils:
 
         unique_words_dict = sorted(unique_words_dict.items(), key=lambda item: item[1], reverse=True)
         print('Уникальных слов: {}'.format(len(unique_words_dict)))
-        if cmd_params[PARAM_LIMIT]:
+        if cmd_params[PARAM_LIMIT] and cmd_params[PARAM_LIMIT] <= len(unique_words_dict):
             print('Установлено ограничение! Будут переведены {} наиболее часто употребляющихся'
                   .format(cmd_params[PARAM_LIMIT]))
             unique_words_dict = list(unique_words_dict)[:cmd_params[PARAM_LIMIT]]
