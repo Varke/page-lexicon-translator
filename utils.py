@@ -1,6 +1,6 @@
 import csv
 from const import PARAM_ORIGINAL_PREFIX, PARAM_TRANSLATION_PREFIX
-
+import sys
 
 class Utils:
     @staticmethod
@@ -12,7 +12,6 @@ class Utils:
                      .replace("https://", "")
                      .replace("/", "_"))
         file_name += '.csv'
-        print('file_name = ' + file_name)
 
         # Запись в файл CSV
         with open(file_name, 'w', newline='', encoding='utf-8') as csv_file:
@@ -23,4 +22,14 @@ class Utils:
             # Запись данных из словаря в файл CSV
             csv_writer.writerows(data)
 
-        print(f"Данные были успешно записаны в файл '{file_name}'.")
+        print(f"Данные были успешно записаны в файл '{file_name}'")
+
+    @staticmethod
+    def show_progress(current: int, maximum: int) -> None:
+        progress = current / maximum * 100
+        sys.stdout.write(
+            "\rПрогресс выполнения: [{:<50}] {:.0f}% (переведено {} из {})"
+            .format("━" * int((current / maximum) * 50), progress, current, maximum))
+        sys.stdout.flush()
+        if current == maximum:
+            print('\n')
