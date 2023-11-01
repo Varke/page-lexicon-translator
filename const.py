@@ -2,3 +2,5 @@
 PARAM_URL = '--url'
 PARAM_LANG = '--lang'
 PARAM_LIMIT = '--limit'
+PARAM_ORIGINAL_PREFIX = '--o_prefix'
+PARAM_TRANSLATION_PREFIX = '--t_prefix'
