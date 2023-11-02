@@ -2,8 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from googletrans import Translator
-from const import PARAM_ORIGINAL_PREFIX, PARAM_TRANSLATION_PREFIX, PARAM_LANG, PARAM_LIMIT
+from const import PARAM_ORIGINAL_PREFIX, PARAM_TRANSLATION_PREFIX, PARAM_LANG, PARAM_LIMIT, PARAM_MIN_LEN
 from utils import Utils
+
 
 class TextUtils:
     @staticmethod
@@ -16,7 +17,7 @@ class TextUtils:
 
     @staticmethod
     def get_unique_words_and_count(text: str, cmd_params: dict) -> list:
-        """ Получить словарь [слово: количество вхождений] """
+        """ Получить список [(слово: количество вхождений)] """
         separate_words = re.findall(r'\b[а-яА-Яa-zA-Z]+\b', text)
         print('Всего на странице найдено слов: {}'.format(len(separate_words)))
         unique_words_dict = {}
@@ -26,10 +27,9 @@ class TextUtils:
 
         unique_words_dict = sorted(unique_words_dict.items(), key=lambda item: item[1], reverse=True)
         print('Уникальных слов: {}'.format(len(unique_words_dict)))
-        if cmd_params[PARAM_LIMIT] and cmd_params[PARAM_LIMIT] <= len(unique_words_dict):
-            print('Установлено ограничение! Будут переведены {} наиболее часто употребляющихся'
-                  .format(cmd_params[PARAM_LIMIT]))
-            unique_words_dict = list(unique_words_dict)[:cmd_params[PARAM_LIMIT]]
+
+        TextUtils.apply_filters(unique_words_dict, cmd_params)
+
         print('Топ {} наиболее часто употребляющихся слов:'.format(10
                                                                    if cmd_params[PARAM_LIMIT] == 0 or cmd_params[PARAM_LIMIT] > 10
                                                                    else cmd_params[PARAM_LIMIT]))
@@ -47,7 +47,20 @@ class TextUtils:
             translation = translator.translate(word, dest=cmd_params[PARAM_LANG])
             Utils.show_progress(word_id, len(words))
             result.append({
-                    cmd_params[PARAM_ORIGINAL_PREFIX]: word,
-                    cmd_params[PARAM_TRANSLATION_PREFIX]: translation.text
-                })
+                cmd_params[PARAM_ORIGINAL_PREFIX]: word,
+                cmd_params[PARAM_TRANSLATION_PREFIX]: translation.text
+            })
         return result
+
+    @staticmethod
+    def apply_filters(src_list: list, cmd_params: dict):
+        """ Применить фильтры, указанные в командной строке """
+        if cmd_params[PARAM_MIN_LEN]:
+            print('Установлено ограничение! Будут переведены слова, длина которых больше, либо равна {}'
+                  .format(cmd_params[PARAM_MIN_LEN]))
+            src_list[:] = [word for word in src_list if len(word[0]) >= cmd_params[PARAM_MIN_LEN]]
+
+        if cmd_params[PARAM_LIMIT] and cmd_params[PARAM_LIMIT] <= len(src_list):
+            print('Установлено ограничение! Будут переведены {} наиболее часто употребляющихся'
+                  .format(cmd_params[PARAM_LIMIT]))
+            src_list[:] = src_list[:cmd_params[PARAM_LIMIT]]

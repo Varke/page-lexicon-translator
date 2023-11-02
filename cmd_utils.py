@@ -1,5 +1,5 @@
 import argparse
-from const import PARAM_URL, PARAM_LANG, PARAM_LIMIT, PARAM_ORIGINAL_PREFIX, PARAM_TRANSLATION_PREFIX
+from const import PARAM_URL, PARAM_LANG, PARAM_LIMIT, PARAM_ORIGINAL_PREFIX, PARAM_TRANSLATION_PREFIX, PARAM_MIN_LEN
 
 
 class CMDUtils:
@@ -38,6 +38,11 @@ class CMDUtils:
                             help='Название столбца с переводом (по-умолчанию "Перевод")',
                             nargs='?',
                             default='Перевод')
+        parser.add_argument(PARAM_MIN_LEN,
+                            type=int,
+                            help='Минимальная длина слова (по-умолчанию 0 символов)',
+                            nargs='?',
+                            default=0)
         # Парсинг аргументов
         args = parser.parse_args()
 
@@ -47,7 +52,8 @@ class CMDUtils:
             PARAM_LANG: args.lang,
             PARAM_LIMIT: args.limit,
             PARAM_ORIGINAL_PREFIX: args.o_prefix,
-            PARAM_TRANSLATION_PREFIX: args.t_prefix
+            PARAM_TRANSLATION_PREFIX: args.t_prefix,
+            PARAM_MIN_LEN: args.min_len
         }
         return params
 
